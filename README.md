@@ -1,4 +1,7 @@
-# ethereum_future
+# LSTM_ADA
+
+Cardano prediction with LSTM.
+
 This Code was forked from "Ethereum Future Prices" by Siraj Raval on Youtube
 
 
