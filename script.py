@@ -177,7 +177,7 @@ def fit_model(model, X_train, Y_train, batch_num, num_epoch, val_split):
             #model = load_model(f"ADA_LSTM_epoch{i}.h5")
             #histories.append(model)
     if h5_file_name != "":
-        model = load_model(f"ADA_LSTM_epoch{i}.h5")
+        model = load_model(h5_file_name)
 
     #Record the time the model starts training
     start = time.time()
