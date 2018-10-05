@@ -167,17 +167,17 @@ def fit_model(model, X_train, Y_train, batch_num, num_epoch, val_split):
             total_epochs, total_time_training = [int(x) for x in next(f).split()]
     except FileNotFoundError:
         total_epochs, total_time_training = [0, 0]
-    # Look for h5 files
+    # Look for h5 files where previous models may be saved in
+    h5_file_name = ""
     for i in range(100):
         f = Path(f"ADA_LSTM_epoch{i}.h5")
-        h5_file_name = ""
         if f.exists():
             h5_file_name = f"ADA_LSTM_epoch{i}.h5"
-            print("Found saved model {h5_file_name}!")
-            model = load_model(f"ADA_LSTM_epoch{i}.h5")
-            histories.append(model)
-        if h5_file_name != "":
-            model = load_model(f"ADA_LSTM_epoch{i}.h5")
+            print(f"Found saved model {h5_file_name}!")
+            #model = load_model(f"ADA_LSTM_epoch{i}.h5")
+            #histories.append(model)
+    if h5_file_name != "":
+        model = load_model(f"ADA_LSTM_epoch{i}.h5")
 
     #Record the time the model starts training
     start = time.time()
@@ -196,7 +196,9 @@ def fit_model(model, X_train, Y_train, batch_num, num_epoch, val_split):
         f.write(f"{total_epochs} {total_time_training}")
         f.close
         model.save(f"ADA_LSTM_epoch{i}.h5")
-
+    f = open("state.txt", "w")
+    f.write(f"{total_epochs} {total_time_training}")
+    f.close
     #Get the time it took to train the model (in seconds)
     training_time = total_time_training
     return model, training_time
