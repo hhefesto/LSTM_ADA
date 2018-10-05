@@ -170,9 +170,13 @@ def fit_model(model, X_train, Y_train, batch_num, num_epoch, val_split):
     try:
         for i in range(100):
             f = Path(f"ADA_LSTM_epoch{i}.h5")
+            h5_file_name = ""
             if f.exists():
                 print("Found saved model!")
+                h5_file_name = f"ADA_LSTM_epoch{i}.h5"
+            if h5_file_name != "":
                 model = load_model(f"ADA_LSTM_epoch{i}.h5")
+                
     except:
         print("Did not find h5 to restart")
     #Record the time the model starts training
