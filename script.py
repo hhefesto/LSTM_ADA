@@ -21,6 +21,8 @@ import matplotlib.pyplot as plt
 ##data processing
 import pandas as pd
 
+from pathlib import Path
+
 #############################
 
 def load_data(filename, sequence_length):
@@ -164,8 +166,15 @@ def fit_model(model, X_train, Y_train, batch_num, num_epoch, val_split):
             total_epochs, total_time_training = [int(x) for x in next(f).split()]
     except FileNotFoundError:
         total_epochs, total_time_training = [0, 0]
-   #Falta loadear en histories los archivos f"ADA_LSTM_epoch{j}"
-        
+    # Look for h5 files
+    try:
+        for i in range(100):
+            f = Path(f"ADA_LSTM_epoch{i}.h5")
+            if f.exists():
+                print("Found saved model!")
+                model = load_model(f"ADA_LSTM_epoch{i}.h5")
+    except:
+        print("Did not find h5 to restart")
     #Record the time the model starts training
     start = time.time()
     
