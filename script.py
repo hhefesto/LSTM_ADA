@@ -183,8 +183,12 @@ def fit_model(model, X_train, Y_train, batch_num, num_epoch, val_split):
         histories = []
         histories.append(
             model.fit(X_train, Y_train, batch_size= batch_num, nb_epoch=1, validation_split= val_split))
+        print(f"Epoch number: {i}")
+        print(f"Training time: {int(math.floor(time.time() - start))}")
+
         total_epochs += 1
         total_time_training += int(math.floor(time.time() - start))
+        print(f"Total training time (all epochs): {total_time_training}")
         f = open("state.txt", "w")
         f.write(f"{total_epochs} {total_time_training}")
         f.close
