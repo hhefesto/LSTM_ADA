@@ -159,7 +159,8 @@ def fit_model(model, X_train, Y_train, batch_num, num_epoch, val_split):
     model -- The 3 layer Recurrent Neural Network that has been fitted to the training data
     training_time -- An integer representing the amount of time (in seconds) that the model was training
     """
-
+    # This is the history of models
+    histories = []
     # Previous state if it exists:
     try:
         with open('state.txt') as f:
@@ -167,24 +168,22 @@ def fit_model(model, X_train, Y_train, batch_num, num_epoch, val_split):
     except FileNotFoundError:
         total_epochs, total_time_training = [0, 0]
     # Look for h5 files
-    try:
-        for i in range(100):
-            f = Path(f"ADA_LSTM_epoch{i}.h5")
-            h5_file_name = ""
-            if f.exists():
-                print("Found saved model!")
-                h5_file_name = f"ADA_LSTM_epoch{i}.h5"
-            if h5_file_name != "":
-                model = load_model(f"ADA_LSTM_epoch{i}.h5")
-                
-    except:
-        print("Did not find h5 to restart")
+    for i in range(100):
+        f = Path(f"ADA_LSTM_epoch{i}.h5")
+        h5_file_name = ""
+        if f.exists():
+            h5_file_name = f"ADA_LSTM_epoch{i}.h5"
+            print("Found saved model {h5_file_name}!")
+            model = load_model(f"ADA_LSTM_epoch{i}.h5")
+            histories.append(model)
+        if h5_file_name != "":
+            model = load_model(f"ADA_LSTM_epoch{i}.h5")
+
     #Record the time the model starts training
     start = time.time()
     
     for i in range(total_epochs, num_epoch):
         #Train the model on X_train and Y_train with history for continue training
-        histories = []
         histories.append(
             model.fit(X_train, Y_train, batch_size= batch_num, nb_epoch=1, validation_split= val_split))
         print(f"Epoch number: {i}")
