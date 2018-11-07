@@ -25,7 +25,7 @@ from pathlib import Path
 
 #############################
 
-def load_data(filename, sequence_length):
+def load_data(sequence_length, target_y, *filenames):
     """
     Loads the bitcoin data
     
@@ -43,17 +43,38 @@ def load_data(filename, sequence_length):
     window_size -- An integer that represents how many days of X values the model can look at at once
     """
     #Read the data file
-    raw_data = pd.read_csv(filename, dtype = float, usecols = [1,2,3,4,5], header = 0).values
+    raw_data = pd.DataFrame()
+    for filename in filenames:
+        f = filename + "_trimed.csv"
+        args = ['date_'+filename,
+                'open_'+filename,
+                'high_'+filename,
+                'low_'+filename,
+                'close_'+filename,
+                'volume_'+filename]
+        aux_data = pd.read_csv(f, index_col=0, parse_dates=True,
+                               dtype =
+                               {args[0]:object,
+                                args[1]:float,
+                                args[2]:float,
+                                args[3]:float,
+                                args[4]:float,
+                                args[5]:float}
+                               , header = 0
+                               , usecols = [0,4,5])
+        raw_data=raw_data.join(aux_data, how='outer')
+    print(raw_data)
+    raw_data = raw_data.values
     
     #Change all zeros to the number before the zero occurs
     for x in range(0, raw_data.shape[0]):
         for y in range(0, raw_data.shape[1]):
-            if(raw_data[x][y] == 0):
+            if np.isnan(raw_data[x][y]):
                 raw_data[x][y] = raw_data[x-1][y]
     
     #Convert the file to a list
     data = raw_data.tolist()
-    
+
     #Convert the data to a 3D array (a x b x c) 
     #Where a is the number of days, b is the window size, and c is the number of features in the data file
     result = []
@@ -70,7 +91,7 @@ def load_data(filename, sequence_length):
     #Useful when graphing bitcoin price over time later
     start = 2400
     end = int(dr.shape[0] + 1)
-    unnormalized_bases = d0[start:end,0:1,3]
+    unnormalized_bases = d0[start:end,0:1,target_yxb]
     
     #Splitting data set into training (First 90% of data points) and testing data (last 10% of data points)
     split_line = round(0.9 * dr.shape[0])
@@ -82,16 +103,16 @@ def load_data(filename, sequence_length):
     #Training Data
     X_train = training_data[:, :-1]
     Y_train = training_data[:, -1]
-    Y_train = Y_train[:, 3]
+    Y_train = Y_train[:, target_y]
     
     #Testing data
     X_test = dr[int(split_line):, :-1]
     Y_test = dr[int(split_line):, 49, :]
-    Y_test = Y_test[:, 3]
+    Y_test = Y_test[:, target_y]
 
     #Get the day before Y_test's price
     Y_daybefore = dr[int(split_line):, 48, :]
-    Y_daybefore = Y_daybefore[:, 3]
+    Y_daybefore = Y_daybefore[:, target_y]
     
     #Get window size and sequence length
     sequence_length = sequence_length
@@ -170,11 +191,11 @@ def fit_model(model, X_train, Y_train, batch_num, num_epoch, val_split):
     # Look for h5 files where previous models may be saved in
     h5_file_name = ""
     for i in range(100):
-        f = Path(f"ADA_LSTM_epoch{i}.h5")
+        f = Path(f"LSTM_epoch{i}.h5")
         if f.exists():
-            h5_file_name = f"ADA_LSTM_epoch{i}.h5"
+            h5_file_name = f"LSTM_epoch{i}.h5"
             print(f"Found saved model {h5_file_name}!")
-            #model = load_model(f"ADA_LSTM_epoch{i}.h5")
+            #model = load_model(f"LSTM_epoch{i}.h5")
             #histories.append(model)
     if h5_file_name != "":
         model = load_model(h5_file_name)
@@ -195,7 +216,7 @@ def fit_model(model, X_train, Y_train, batch_num, num_epoch, val_split):
         f = open("state.txt", "w")
         f.write(f"{total_epochs} {total_time_training}")
         f.close
-        model.save(f"ADA_LSTM_epoch{i}.h5")
+        model.save(f"LSTM_epoch{i}.h5")
     f = open("state.txt", "w")
     f.write(f"{total_epochs} {total_time_training}")
     f.close
@@ -389,7 +410,7 @@ def calculate_statistics(true_pos, false_pos, true_neg, false_neg, y_predict, Y_
 
 # Loading Data
 
-X_train, Y_train, X_test, Y_test, Y_daybefore, unnormalized_bases, window_size = load_data("binance_ADA_01-12-2017_02-10-2018.csv", 50)
+X_train, Y_train, X_test, Y_test, Y_daybefore, unnormalized_bases, window_size = load_data(50, 0, "ADABTC", "ETCBTC", "IOTABTC", "NANOBTC", "TRXBTC", "XRPBTC", "BNBBTC", "DASHBTC", "ETHBTC", "LSKBTC", "NEOBTC", "XLMBTC", "BCCBTC", "BTCUSDT", "EOSBTC", "ICXBTC", "LTCBTC", "QTUMBTC",  "XMRBTC")
 print(X_train.shape)
 print(Y_train.shape)
 print(X_test.shape)
@@ -409,7 +430,10 @@ print(model.summary())
 
 # Training Model
 
-model, training_time = fit_model(model, X_train, Y_train, 1024, 100, .05)
+#model, training_time = fit_model(model, X_train, Y_train, 1024, 100, .05)
+
+# to test if everything is OK, use:
+model, training_time = fit_model(model, X_train[0:100], Y_train[0:100], 100, 3, .05)
 
 #Print the training time
 print("Training time", training_time, "seconds")
