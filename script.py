@@ -62,6 +62,7 @@ def load_data(sequence_length, target_y, *filenames):
                                 args[5]:float}
                                , header = 0
                                , usecols = [0,4,5])
+        print(aux_data)
         raw_data=raw_data.join(aux_data, how='outer')
     print(raw_data)
     raw_data = raw_data.values
