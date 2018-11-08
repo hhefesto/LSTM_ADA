@@ -92,7 +92,7 @@ def load_data(sequence_length, target_y, *filenames):
     #Useful when graphing bitcoin price over time later
     start = 2400
     end = int(dr.shape[0] + 1)
-    unnormalized_bases = d0[start:end,0:1,target_yxb]
+    unnormalized_bases = d0[start:end,0:1,target_y]
     
     #Splitting data set into training (First 90% of data points) and testing data (last 10% of data points)
     split_line = round(0.9 * dr.shape[0])
