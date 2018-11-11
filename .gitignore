@@ -100,26 +100,5 @@ myenv/
 
 *.DS_Store
 
-ADA_LSTM_epoch*
-
-binance_*
-
-ADABTC.csv
-ETCBTC.csv
-IOTABTC.csv
-NANOBTC.csv
-TRXBTC.csv
-XRPBTC.csv
-BNBBTC.csv
-DASHBTC.csv
-ETHBTC.csv
-LSKBTC.csv
-NEOBTC.csv
-XLMBTC.csv
-BCCBTC.csv
-BTCUSDT.csv
-EOSBTC.csv
-ICXBTC.csv
-LTCBTC.csv
-QTUMBTC.csv
-XMRBTC.csv
+data/
+training_saves/

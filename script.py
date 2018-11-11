@@ -45,7 +45,7 @@ def load_data(sequence_length, target_y, *filenames):
     #Read the data file
     raw_data = pd.DataFrame()
     for filename in filenames:
-        f = filename + "_trimed.csv"
+        f = "data/" + filename + "_trimed.csv"
         args = ['date_'+filename,
                 'open_'+filename,
                 'high_'+filename,
@@ -192,7 +192,7 @@ def fit_model(model, X_train, Y_train, batch_num, num_epoch, val_split):
     # Look for h5 files where previous models may be saved in
     h5_file_name = ""
     for i in range(100):
-        f = Path(f"LSTM_epoch{i}.h5")
+        f = Path(f"training_saves/LSTM_epoch{i}.h5")
         if f.exists():
             h5_file_name = f"LSTM_epoch{i}.h5"
             print(f"Found saved model {h5_file_name}!")
